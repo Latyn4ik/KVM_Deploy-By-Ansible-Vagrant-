@@ -1,0 +1,49 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  
+  config.vm.define "zabbix" do |zabbix|
+    config.ssh.insert_key = false
+    config.vm.hostname = "zabbix"
+    config.vm.box = "centos/7"
+    config.vm.box_check_update = false
+    config.vm.network "private_network", ip: "192.168.122.7"
+    config.vm.provider :libvirt do |v|
+      v.memory = 1024
+      v.cpus = 2
+    end
+    config.vm.provision "shell",
+      run: "always",
+      inline: "yum install -y net-tools centos-release-scl"
+    config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/me.pub"
+    config.vm.provision "shell", inline: <<-SHELL 
+        cat /home/vagrant/.ssh/me.pub >> /home/vagrant/.ssh/authorized_keys
+        setenforce 0
+        systemctl stop firewalld
+        rpm -Uvh https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-2.el7.noarch.rpm
+    SHELL
+    # config.vm.provision "ansible" do |ansible|
+    #   #ansible.verbose = "v"
+    #   ansible.limit = "all"
+    #   ansible.playbook = "/etc/ansible/testplay.yml" 
+    # end
+  end
+
+  # config.vm.define "zabbix" do |zabbix|
+  #   config.ssh.insert_key = false
+  #   config.vm.hostname = "zabbix"
+  #   config.vm.box = "armada/ubuntu-18.04-server-amd64"
+  #   config.vm.box_version = "20181206.01"
+  #   config.vm.box_check_update = false
+  #   config.vm.network "private_network", ip: "192.168.122.7"
+  #   config.vm.provider :libvirt do |v|
+  #     v.memory = 1024
+  #   end
+  #   config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/me.pub"
+  #   config.vm.provision "shell", inline: <<-SHELL 
+  #       cat /home/vagrant/.ssh/me.pub >> /home/vagrant/.ssh/authorized_keys
+  #   SHELL
+  # end
+
+end

@@ -1,0 +1,24 @@
+---
+#MySQL Wordpress Settings
+mysql_root_password: "mysql_root_password"
+mysql_db: "wordpress"
+mysql_user: "sammy"
+mysql_password: "password"
+
+#MySQL Zabbix Settings
+zabbix_server: 192.168.122.7
+
+zabbix_mysql_db_host: 192.168.122.6
+zabbix_mysql_root_password: "mysql_root_password"
+zabbix_mysql_db: "zabbixdb"
+zabbix_mysql_user: "zabbix"
+zabbix_mysql_password: "zabbixpass"
+zabbix_server_dbencoding: utf8
+zabbix_server_dbcollation: utf8_bin
+zabbix_db_socket: /var/lib/mysql/mysql.sock
+
+#HTTP Settings
+http_host: "test_domain"
+http_conf: "test_domain.conf"
+http_port: "80"
+

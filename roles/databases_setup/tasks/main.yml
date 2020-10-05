@@ -1,0 +1,97 @@
+---
+- name: Install prerequisites
+  apt: name=aptitude update_cache=yes state=latest force_apt_get=yes
+  tags: [ system ]
+
+- name: Install Main Packages
+  apt: name={{ item }} update_cache=yes state=latest
+  loop: ['mysql-server', 'zabbix-server-mysql']
+  tags: [ system ]
+    
+- name: Make sure pymysql is present
+  become: true
+  pip:
+    name: pymysql
+    state: present
+  tags: [ py_system ]
+
+
+# MySQL Configuration
+- name: Set the root password
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_password }}" 
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  tags: [ mysql_wordpress ]
+
+- name: Remove all anonymous user accounts
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  tags: [ mysql_wordpress ]
+
+- name: Remove the MySQL test database
+  mysql_db:
+    name: test
+    state: absent
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  tags: [ mysql_wordpress ]
+
+- name: Creates database for WordPress
+  mysql_db:
+    name: "{{ mysql_db }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  tags: [ mysql_wordpress ]
+
+- name: Create MySQL user for WordPress
+  mysql_user:
+    host: '%'
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: "{{ mysql_db }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  tags: [ mysql_wordpress ]
+
+- name: Change bind-address in mysqld/cnf
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: 'bind-address'
+    line: bind-address=0.0.0.0
+  notify: Restart MySQL
+  tags: [ mysql ]
+
+
+# Zabbix MYSQL Configuration
+- name: Creates database for Zabbix-server
+  mysql_db:
+    name: "{{ zabbix_mysql_db }}"
+    encoding: "{{ zabbix_server_dbencoding }}"
+    collation: "{{ zabbix_server_dbcollation }}"
+    state: import
+    target: /usr/share/doc/zabbix-server-mysql/create.sql.gz
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  run_once: true
+  ignore_errors: yes
+  tags: [ zabbix_mysql ]
+
+- name: Create MySQL user for Zabbix-server
+  mysql_user:
+    host: '%'
+    name: "{{ zabbix_mysql_user }}"
+    password: "{{ zabbix_mysql_password }}"
+    priv: "{{ zabbix_mysql_db }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+  tags: [ zabbix_mysql ]

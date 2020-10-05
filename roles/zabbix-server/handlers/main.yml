@@ -1,0 +1,13 @@
+---
+- name: Restart Zabbix Server
+  service: name=zabbix-server enabled=true state=restarted
+
+- name: Restart Zabbix Agent
+  service: name=zabbix-agent enabled=true state=restarted
+
+- name: Restart Apache
+  service: name=httpd enabled=true state=restarted
+
+- name: Restart Firewall
+  service: name=firewalld enabled=true state=restarted
+  

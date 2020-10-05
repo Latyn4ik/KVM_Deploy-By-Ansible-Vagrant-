@@ -1,0 +1,51 @@
+- name: Install Zabbix Server and Zabbix Agent
+  yum: pkg={{item}} state=latest  
+  with_items:
+    - zabbix-server-mysql
+    - zabbix-web-mysql
+    - zabbix-agent
+    # - policycoreutils-python
+  tags: [ system ]
+
+- name: Install mysql_py_support
+  yum: pkg={{item}} state=installed  
+  with_items:
+    -   MySQL-python
+  tags: [ py_system ]
+
+
+- name: Add Httpd Config
+  template:
+    src=zabbix.conf
+    dest=/etc/httpd/conf.d/zabbix.conf
+    owner=vagrant
+    group=vagrant
+    mode=0641
+  notify: Restart Apache
+  tags: [ system_apache ]
+
+- name: Copy Zabbix Config
+  template:
+    src=zabbix_server.conf
+    dest=/etc/zabbix/zabbix_server.conf
+    owner=vagrant
+    group=vagrant
+    mode=0610
+  notify: 
+    - Restart Zabbix Server
+    - Restart Zabbix Agent
+
+- name: Open the Firewalld port on Zabbix-server
+  firewalld: port={{ item }} permanent=true state=enabled
+  when: ansible_distribution_major_version == '7'
+  with_items:
+    - 10050/tcp
+    - 10051/udp
+    - 80/tcp
+  notify:
+    - Restart Firewall
+  tags: [ firewall_config ]
+
+# - name: Configure SELinux 
+#   seboolean: name=httpd_can_network_connect state=yes persistent=yes
+

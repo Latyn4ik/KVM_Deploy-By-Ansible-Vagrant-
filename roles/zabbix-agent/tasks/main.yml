@@ -1,0 +1,41 @@
+---
+- name: Installing the Zabbix Agent
+  apt: name=zabbix-agent state=latest
+
+- name: Config zabbix_agentd.conf Hostname
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    state: present
+    regexp: '^Hostname=Zabbix server'
+    line: "Hostname={{ ansible_hostname }}"
+    
+- name: Config zabbix_agentd.conf Server_Active
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    state: present
+    regexp: '^ServerActive=127.0.0.1'
+    line: "ServerActive={{ zabbix_server }}"
+
+- name: Config zabbix_agentd.conf Server
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    state: present
+    regexp: '^Server=127.0.0.1'
+    line: "Server={{ zabbix_server }}"
+
+
+- name: Config zabbix_agentd.conf ListenPort
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    state: present
+    regexp: '^# ListenPort='
+    line: "ListenPort=10050"
+
+
+- name: Config zabbix_agentd.conf Enable_Remote_Commands
+  lineinfile:
+    path: /etc/zabbix/zabbix_agentd.conf
+    state: present
+    regexp: '^# EnableRemoteCommands=0'
+    line: 'EnableRemoteCommands=1'
+  notify: Start Zabbix Agent

@@ -1,0 +1,28 @@
+---
+- hosts: apache
+  become: true
+  vars_files:
+    - default.yml
+  roles:
+    - wordpress_setup
+
+# - hosts: mysql
+#   become: true
+#   vars_files:
+#     - default.yml
+#   roles:
+#     - databases_setup
+
+# - hosts: zabbix
+#   become: true
+#   vars_files:
+#     - default.yml
+#   roles:
+#     - zabbix-server
+
+- hosts: [apache,mysql]
+  become: true
+  vars_files:
+    - default.yml
+  roles:
+    - role: zabbix-agent
