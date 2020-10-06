@@ -15,3 +15,5 @@
 
 Ansible requirements:
 * ufw use in asnible - ``` ansible-galaxy collection install community.general ```
+
+Zabbix version 4.0
