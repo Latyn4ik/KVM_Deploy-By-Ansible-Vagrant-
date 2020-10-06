@@ -15,7 +15,7 @@
 
 Zabbix version 4.0
 
-KCM-QUEMY requirements:
+KVM-QUEMY requirements:
 * ``` sudo apt install qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager ```
 * ``` sudo gpasswd -a $USER libvirt ```
 * ``` sudo systemctl status libvirtd ``` 
