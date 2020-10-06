@@ -17,8 +17,8 @@ Zabbix version 4.0
 
 KVM-QUEMY requirements:
 * ``` sudo apt install qemu qemu-kvm libvirt-daemon libvirt-clients bridge-utils virt-manager ```
-* ``` sudo gpasswd -a $USER libvirt ```
-* ``` sudo systemctl status libvirtd ``` 
+* ``` sudo gpasswd -a $USER libvirt ```  ( Add your user to libvirt group)
+* ``` sudo systemctl status libvirtd ``` (  Check that libvirt server is running)
 
 Ansible requirements:
 * ufw use in asnible - ``` ansible-galaxy collection install community.general ```
