@@ -8,13 +8,15 @@
     state: present
     regexp: '^Hostname=Zabbix server'
     line: "Hostname={{ ansible_hostname }}"
-    
+  notify: Reload Zabbix Agent
+   
 - name: Config zabbix_agentd.conf Server_Active
   lineinfile:
     path: /etc/zabbix/zabbix_agentd.conf
     state: present
     regexp: '^ServerActive=127.0.0.1'
     line: "ServerActive={{ zabbix_server }}"
+  notify: Reload Zabbix Agent
 
 - name: Config zabbix_agentd.conf Server
   lineinfile:
@@ -22,7 +24,7 @@
     state: present
     regexp: '^Server=127.0.0.1'
     line: "Server={{ zabbix_server }}"
-
+  notify: Reload Zabbix Agent
 
 - name: Config zabbix_agentd.conf ListenPort
   lineinfile:
@@ -30,7 +32,7 @@
     state: present
     regexp: '^# ListenPort='
     line: "ListenPort=10050"
-
+  notify: Reload Zabbix Agent
 
 - name: Config zabbix_agentd.conf Enable_Remote_Commands
   lineinfile:
